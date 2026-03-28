@@ -1,0 +1,716 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "workspaceId": "default",
+    "canvasLogicalId": "canvas:architecture",
+    "canonicalCanvasPath": "Canvases/Architecture.json",
+    "title": "Architecture",
+    "createdAtMs": 1711612800000,
+    "updatedAtMs": 1711616400000
+  },
+  "viewport": {
+    "zoomScale": 1,
+    "panX": 0,
+    "panY": 0
+  },
+  "nodes": {
+    "n1": {
+      "id": "n1",
+      "title": "Auth Screen",
+      "bounds": {
+        "x": 100,
+        "y": 150,
+        "width": 240,
+        "height": 160
+      },
+      "position": {
+        "x": 125.61328799591823,
+        "y": 248.38220239277544
+      },
+      "ref": "Files/Auth Screen.md",
+      "tags": [
+        "auth",
+        "frontend"
+      ],
+      "links": [
+        "API Gateway",
+        "User Profile"
+      ],
+      "createdAtMs": 1711612800000,
+      "modifiedAtMs": 1711616400000,
+      "createdFromFileDrop": false,
+      "isBrokenLink": false,
+      "contentPreview": "# Auth Screen\n\nHandles user authentication...",
+      "content": null,
+      "markdownContent": "# Auth Screen\n\n## Overview\nHandles user authentication via Sign in with Apple. Authenticated tokens are forwarded to the [[API Gateway]] for session validation.\n\n## Requirements\n- Apple OAuth flow\n- Token storage in Keychain\n- Session persistence\n\n## Related\nOnce authenticated, the user lands on their [[User Profile]] page.\n\n## Technical Notes\n```swift\nfunc authenticate() async throws {\n    let credential = try await appleSignIn()\n    await store(credential)\n}\n```"
+    },
+    "n2": {
+      "id": "n2",
+      "title": "API Gateway",
+      "bounds": {
+        "x": 450,
+        "y": 100,
+        "width": 240,
+        "height": 140
+      },
+      "position": {
+        "x": 450,
+        "y": 100
+      },
+      "ref": "Files/API Gateway.md",
+      "tags": [
+        "backend",
+        "networking"
+      ],
+      "links": [
+        "Auth Screen",
+        "Database"
+      ],
+      "createdAtMs": 1711612800000,
+      "modifiedAtMs": 1711616400000,
+      "createdFromFileDrop": false,
+      "isBrokenLink": false,
+      "contentPreview": "# API Gateway\n\nCentral routing layer...",
+      "content": null,
+      "markdownContent": "# API Gateway\n\n## Overview\nCentral routing layer for all API calls. Receives auth tokens from the [[Auth Screen]] and validates sessions.\n\n## Endpoints\n- `POST /auth` — Authentication\n- `GET /users/:id` — User profile\n- `PUT /canvas` — Canvas sync\n\n## Dependencies\nPersists all data to the [[Database]]. Serves canvas state to the [[Canvas Engine]] over WebSocket.\n\n## Rate Limiting\n100 requests per minute per client."
+    },
+    "n3": {
+      "id": "n3",
+      "title": "User Profile",
+      "bounds": {
+        "x": 100,
+        "y": 420,
+        "width": 240,
+        "height": 140
+      },
+      "position": {
+        "x": 104.93816680361245,
+        "y": 514.7973363351194
+      },
+      "tags": [
+        "frontend",
+        "user"
+      ],
+      "links": [
+        "Auth Screen"
+      ],
+      "createdAtMs": 1711612800000,
+      "modifiedAtMs": 1711616400000,
+      "createdFromFileDrop": false,
+      "isBrokenLink": false,
+      "contentPreview": "# User Profile\n\nDisplays user info...",
+      "content": null,
+      "markdownContent": "# User Profile\n\n## Overview\nDisplays user information and settings. Accessible after login via the [[Auth Screen]].\n\n## Features\n- Avatar upload\n- Display name editing\n- Notification preferences\n- Account deletion"
+    },
+    "n4": {
+      "id": "n4",
+      "title": "Database",
+      "bounds": {
+        "x": 480,
+        "y": 380,
+        "width": 220,
+        "height": 140
+      },
+      "position": {
+        "x": 484.1031847788481,
+        "y": 428.44648171103375
+      },
+      "ref": "Files/Database.md",
+      "tags": [
+        "backend",
+        "storage"
+      ],
+      "links": [
+        "API Gateway"
+      ],
+      "createdAtMs": 1711612800000,
+      "modifiedAtMs": 1711616400000,
+      "createdFromFileDrop": false,
+      "isBrokenLink": false,
+      "contentPreview": "# Database\n\nPostgreSQL with pgvector...",
+      "content": null,
+      "markdownContent": "# Database\n\n## Overview\nPostgreSQL with pgvector for embeddings. All reads and writes go through the [[API Gateway]].\n\n## Tables\n- `users` — User accounts\n- `canvases` — Canvas documents\n- `nodes` — Architecture nodes\n\n## Access\nThe [[Canvas Engine]] reads canvas state from the database via the gateway.\n\n## Migrations\nManaged via Supabase CLI."
+    },
+    "n5": {
+      "id": "n5",
+      "title": "Canvas Engine",
+      "bounds": {
+        "x": 800,
+        "y": 200,
+        "width": 240,
+        "height": 160
+      },
+      "position": {
+        "x": 791.554109152796,
+        "y": 242.6345751734254
+      },
+      "tags": [
+        "core",
+        "rendering"
+      ],
+      "links": [
+        "API Gateway",
+        "Database"
+      ],
+      "createdAtMs": 1711612800000,
+      "modifiedAtMs": 1711616400000,
+      "createdFromFileDrop": false,
+      "isBrokenLink": false,
+      "contentPreview": "# Canvas Engine\n\nCore rendering...",
+      "content": null,
+      "markdownContent": "# Canvas Engine\n\n## Overview\nCore rendering engine for the infinite canvas. Syncs state via the [[API Gateway]] and persists to the [[Database]].\n\n## Architecture\n- Metal-backed rendering pipeline\n- Loro CRDT for real-time sync\n- Gesture recognizers for touch input\n\n## Performance\n- 60fps target\n- Spatial indexing with R-tree\n- Lazy node loading"
+    }
+  },
+  "links": {
+    "l1": {
+      "id": "l1",
+      "sourceNodeID": "n1",
+      "targetNodeID": "n2",
+      "controlPointOffset": {
+        "width": -35.351529690289,
+        "height": -37.070305938058056
+      },
+      "strokeColor": {
+        "r": 0.93,
+        "g": 0.53,
+        "b": 0.38,
+        "a": 1
+      },
+      "createdAtMs": 1711612800000
+    },
+    "l2": {
+      "id": "l2",
+      "sourceNodeID": "n1",
+      "targetNodeID": "n3",
+      "controlPointOffset": {
+        "width": -20,
+        "height": 0
+      },
+      "strokeColor": {
+        "r": 0.37,
+        "g": 0.44,
+        "b": 0.38,
+        "a": 1
+      },
+      "createdAtMs": 1711612800000
+    },
+    "l3": {
+      "id": "l3",
+      "sourceNodeID": "n2",
+      "targetNodeID": "n4",
+      "controlPointOffset": {
+        "width": 20,
+        "height": 20
+      },
+      "strokeColor": {
+        "r": 0.93,
+        "g": 0.53,
+        "b": 0.38,
+        "a": 1
+      },
+      "createdAtMs": 1711612800000
+    },
+    "l4": {
+      "id": "l4",
+      "sourceNodeID": "n2",
+      "targetNodeID": "n5",
+      "controlPointOffset": {
+        "width": 0,
+        "height": -20
+      },
+      "strokeColor": {
+        "r": 0.55,
+        "g": 0.55,
+        "b": 0.65,
+        "a": 0.8
+      },
+      "createdAtMs": 1711612800000
+    },
+    "l5": {
+      "id": "l5",
+      "sourceNodeID": "n5",
+      "targetNodeID": "n4",
+      "controlPointOffset": {
+        "width": 30,
+        "height": 0
+      },
+      "strokeColor": {
+        "r": 0.37,
+        "g": 0.44,
+        "b": 0.38,
+        "a": 1
+      },
+      "createdAtMs": 1711612800000
+    }
+  },
+  "strokes": {
+    "S1A2B3C4-0001-0000-0000-000000000001": {
+      "id": "S1A2B3C4-0001-0000-0000-000000000001",
+      "toolType": "pen",
+      "color": {
+        "r": 0.17,
+        "g": 0.17,
+        "b": 0.18,
+        "a": 1
+      },
+      "width": 2.2,
+      "deleted": false,
+      "points": [
+        {
+          "x": 112,
+          "y": 188,
+          "tMs": 0,
+          "pressure": 0
+        },
+        {
+          "x": 112,
+          "y": 182,
+          "tMs": 16,
+          "pressure": 0.28
+        },
+        {
+          "x": 112,
+          "y": 172,
+          "tMs": 32,
+          "pressure": 0.52
+        },
+        {
+          "x": 112,
+          "y": 160,
+          "tMs": 48,
+          "pressure": 0.71
+        },
+        {
+          "x": 112,
+          "y": 148,
+          "tMs": 64,
+          "pressure": 0.8
+        },
+        {
+          "x": 112,
+          "y": 136,
+          "tMs": 80,
+          "pressure": 0.83
+        },
+        {
+          "x": 112,
+          "y": 126,
+          "tMs": 96,
+          "pressure": 0.8
+        },
+        {
+          "x": 112,
+          "y": 152,
+          "tMs": 112,
+          "pressure": 0.75
+        },
+        {
+          "x": 112,
+          "y": 178,
+          "tMs": 128,
+          "pressure": 0.7
+        },
+        {
+          "x": 112,
+          "y": 192,
+          "tMs": 140,
+          "pressure": 0.18
+        },
+        {
+          "x": 112,
+          "y": 194,
+          "tMs": 148,
+          "pressure": 0
+        }
+      ]
+    },
+    "S1A2B3C4-0002-0000-0000-000000000002": {
+      "id": "S1A2B3C4-0002-0000-0000-000000000002",
+      "toolType": "pen",
+      "color": {
+        "r": 0.17,
+        "g": 0.17,
+        "b": 0.18,
+        "a": 1
+      },
+      "width": 2.2,
+      "deleted": false,
+      "points": [
+        {
+          "x": 108,
+          "y": 158,
+          "tMs": 0,
+          "pressure": 0
+        },
+        {
+          "x": 112,
+          "y": 158,
+          "tMs": 16,
+          "pressure": 0.35
+        },
+        {
+          "x": 118,
+          "y": 158,
+          "tMs": 32,
+          "pressure": 0.65
+        },
+        {
+          "x": 124,
+          "y": 158,
+          "tMs": 48,
+          "pressure": 0.72
+        },
+        {
+          "x": 128,
+          "y": 158,
+          "tMs": 60,
+          "pressure": 0.2
+        },
+        {
+          "x": 130,
+          "y": 158,
+          "tMs": 68,
+          "pressure": 0
+        }
+      ]
+    },
+    "S1A2B3C4-0003-0000-0000-000000000003": {
+      "id": "S1A2B3C4-0003-0000-0000-000000000003",
+      "toolType": "pen",
+      "color": {
+        "r": 0.17,
+        "g": 0.17,
+        "b": 0.18,
+        "a": 1
+      },
+      "width": 2.2,
+      "deleted": false,
+      "points": [
+        {
+          "x": 142,
+          "y": 126,
+          "tMs": 0,
+          "pressure": 0
+        },
+        {
+          "x": 140,
+          "y": 130,
+          "tMs": 16,
+          "pressure": 0.3
+        },
+        {
+          "x": 136,
+          "y": 140,
+          "tMs": 32,
+          "pressure": 0.58
+        },
+        {
+          "x": 134,
+          "y": 152,
+          "tMs": 48,
+          "pressure": 0.74
+        },
+        {
+          "x": 134,
+          "y": 164,
+          "tMs": 64,
+          "pressure": 0.82
+        },
+        {
+          "x": 136,
+          "y": 176,
+          "tMs": 80,
+          "pressure": 0.78
+        },
+        {
+          "x": 140,
+          "y": 186,
+          "tMs": 96,
+          "pressure": 0.65
+        },
+        {
+          "x": 144,
+          "y": 193,
+          "tMs": 110,
+          "pressure": 0.22
+        },
+        {
+          "x": 146,
+          "y": 196,
+          "tMs": 118,
+          "pressure": 0
+        }
+      ]
+    },
+    "S1A2B3C4-0004-0000-0000-000000000004": {
+      "id": "S1A2B3C4-0004-0000-0000-000000000004",
+      "toolType": "pen",
+      "color": {
+        "r": 0.17,
+        "g": 0.17,
+        "b": 0.18,
+        "a": 1
+      },
+      "width": 2.2,
+      "deleted": false,
+      "points": [
+        {
+          "x": 158,
+          "y": 126,
+          "tMs": 0,
+          "pressure": 0
+        },
+        {
+          "x": 160,
+          "y": 130,
+          "tMs": 16,
+          "pressure": 0.32
+        },
+        {
+          "x": 162,
+          "y": 140,
+          "tMs": 32,
+          "pressure": 0.6
+        },
+        {
+          "x": 162,
+          "y": 152,
+          "tMs": 48,
+          "pressure": 0.76
+        },
+        {
+          "x": 162,
+          "y": 164,
+          "tMs": 64,
+          "pressure": 0.8
+        },
+        {
+          "x": 162,
+          "y": 174,
+          "tMs": 80,
+          "pressure": 0.72
+        },
+        {
+          "x": 160,
+          "y": 184,
+          "tMs": 96,
+          "pressure": 0.55
+        },
+        {
+          "x": 158,
+          "y": 192,
+          "tMs": 110,
+          "pressure": 0.2
+        },
+        {
+          "x": 157,
+          "y": 196,
+          "tMs": 118,
+          "pressure": 0
+        }
+      ]
+    },
+    "S1A2B3C4-0005-0000-0000-000000000005": {
+      "id": "S1A2B3C4-0005-0000-0000-000000000005",
+      "toolType": "pen",
+      "color": {
+        "r": 0.17,
+        "g": 0.17,
+        "b": 0.18,
+        "a": 1
+      },
+      "width": 2.2,
+      "deleted": false,
+      "points": [
+        {
+          "x": 174,
+          "y": 126,
+          "tMs": 0,
+          "pressure": 0
+        },
+        {
+          "x": 176,
+          "y": 128,
+          "tMs": 16,
+          "pressure": 0.25
+        },
+        {
+          "x": 180,
+          "y": 136,
+          "tMs": 32,
+          "pressure": 0.55
+        },
+        {
+          "x": 182,
+          "y": 148,
+          "tMs": 48,
+          "pressure": 0.72
+        },
+        {
+          "x": 180,
+          "y": 160,
+          "tMs": 64,
+          "pressure": 0.78
+        },
+        {
+          "x": 176,
+          "y": 170,
+          "tMs": 80,
+          "pressure": 0.75
+        },
+        {
+          "x": 178,
+          "y": 158,
+          "tMs": 96,
+          "pressure": 0.68
+        },
+        {
+          "x": 182,
+          "y": 146,
+          "tMs": 112,
+          "pressure": 0.62
+        },
+        {
+          "x": 186,
+          "y": 136,
+          "tMs": 128,
+          "pressure": 0.55
+        },
+        {
+          "x": 190,
+          "y": 128,
+          "tMs": 144,
+          "pressure": 0.38
+        },
+        {
+          "x": 192,
+          "y": 126,
+          "tMs": 155,
+          "pressure": 0
+        }
+      ]
+    },
+    "S1A2B3C4-0006-0000-0000-000000000006": {
+      "id": "S1A2B3C4-0006-0000-0000-000000000006",
+      "toolType": "pen",
+      "color": {
+        "r": 0.17,
+        "g": 0.17,
+        "b": 0.18,
+        "a": 1
+      },
+      "width": 2.2,
+      "deleted": false,
+      "points": [
+        {
+          "x": 204,
+          "y": 126,
+          "tMs": 0,
+          "pressure": 0
+        },
+        {
+          "x": 204,
+          "y": 130,
+          "tMs": 16,
+          "pressure": 0.3
+        },
+        {
+          "x": 204,
+          "y": 142,
+          "tMs": 32,
+          "pressure": 0.6
+        },
+        {
+          "x": 204,
+          "y": 156,
+          "tMs": 48,
+          "pressure": 0.76
+        },
+        {
+          "x": 204,
+          "y": 170,
+          "tMs": 64,
+          "pressure": 0.8
+        },
+        {
+          "x": 204,
+          "y": 182,
+          "tMs": 80,
+          "pressure": 0.72
+        },
+        {
+          "x": 204,
+          "y": 194,
+          "tMs": 96,
+          "pressure": 0.3
+        },
+        {
+          "x": 204,
+          "y": 196,
+          "tMs": 104,
+          "pressure": 0
+        }
+      ]
+    },
+    "S1A2B3C4-0007-0000-0000-000000000007": {
+      "id": "S1A2B3C4-0007-0000-0000-000000000007",
+      "toolType": "pen",
+      "color": {
+        "r": 0.17,
+        "g": 0.17,
+        "b": 0.18,
+        "a": 1
+      },
+      "width": 2.2,
+      "deleted": false,
+      "points": [
+        {
+          "x": 200,
+          "y": 158,
+          "tMs": 0,
+          "pressure": 0
+        },
+        {
+          "x": 202,
+          "y": 158,
+          "tMs": 16,
+          "pressure": 0.38
+        },
+        {
+          "x": 206,
+          "y": 158,
+          "tMs": 32,
+          "pressure": 0.65
+        },
+        {
+          "x": 210,
+          "y": 158,
+          "tMs": 48,
+          "pressure": 0.7
+        },
+        {
+          "x": 214,
+          "y": 158,
+          "tMs": 60,
+          "pressure": 0.25
+        },
+        {
+          "x": 216,
+          "y": 158,
+          "tMs": 68,
+          "pressure": 0
+        }
+      ]
+    }
+  },
+  "strokeOrder": [
+    "S1A2B3C4-0001-0000-0000-000000000001",
+    "S1A2B3C4-0002-0000-0000-000000000002",
+    "S1A2B3C4-0003-0000-0000-000000000003",
+    "S1A2B3C4-0004-0000-0000-000000000004",
+    "S1A2B3C4-0005-0000-0000-000000000005",
+    "S1A2B3C4-0006-0000-0000-000000000006",
+    "S1A2B3C4-0007-0000-0000-000000000007"
+  ],
+  "tombstones": {}
+}
